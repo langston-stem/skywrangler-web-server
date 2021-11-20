@@ -4,6 +4,12 @@ import pathlib
 
 from .main import main
 
+LOG_LEVEL_MAP = {
+    "debug": logging.DEBUG,
+    "info": logging.INFO,
+    "warning": logging.WARNING,
+    "error": logging.ERROR,
+}
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -15,6 +21,13 @@ if __name__ == "__main__":
         help="path to the web client directory",
     )
 
+    parser.add_argument(
+        "--log-level",
+        choices=LOG_LEVEL_MAP.keys(),
+        default="warning",
+        help="log level (default: %(default)s)",
+    )
+
     args = parser.parse_args()
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=LOG_LEVEL_MAP[args.log_level])
     main(args.web_client_path)
