@@ -7,9 +7,9 @@ from .rpi import RPi
 routes = web.RouteTableDef()
 
 
-@routes.get("/api/test")
+@routes.get("/api/status")
 async def handle_test(request: web.Request) -> web.Response:
-    return web.json_response({"status": "success"})
+    return web.json_response({})
 
 
 @routes.post("/api/shutdown")
