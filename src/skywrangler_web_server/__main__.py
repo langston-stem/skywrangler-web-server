@@ -2,7 +2,7 @@ import argparse
 import logging
 import pathlib
 
-from .main import main
+from .server import serve
 
 LOG_LEVEL_MAP = {
     "debug": logging.DEBUG,
@@ -11,7 +11,8 @@ LOG_LEVEL_MAP = {
     "error": logging.ERROR,
 }
 
-if __name__ == "__main__":
+
+def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -30,4 +31,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     logging.basicConfig(level=LOG_LEVEL_MAP[args.log_level])
-    main(args.web_client_path)
+    serve(args.web_client_path)
+
+
+if __name__ == "__main__":
+    main()

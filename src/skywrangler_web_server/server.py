@@ -7,11 +7,20 @@ from .rpi import RPi
 
 
 async def root_handler(request):
-    # redirect '/' to index.html
+    """
+    Redirects ``/`` to ``/index.html``.
+    """
     return web.HTTPFound("/index.html")
 
 
-def main(static_path: Optional[PathLike] = None) -> None:
+def serve(static_path: Optional[PathLike] = None) -> None:
+    """
+    Runs the web server.
+
+    Args:
+        static_path: optional path to directory containing static files to
+            be served.
+    """
     app = web.Application()
 
     app.router.add_routes(routes)
