@@ -13,7 +13,7 @@ async def root_handler(request):
     return web.HTTPFound("/index.html")
 
 
-def serve(static_path: Optional[PathLike] = None) -> None:
+def serve(port: Optional[int] = None, static_path: Optional[PathLike] = None) -> None:
     """
     Runs the web server.
 
@@ -33,4 +33,4 @@ def serve(static_path: Optional[PathLike] = None) -> None:
 
     app["rpi"] = RPi()
 
-    web.run_app(app)
+    web.run_app(app, port=port)

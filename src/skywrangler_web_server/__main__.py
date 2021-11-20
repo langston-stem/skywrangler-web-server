@@ -16,6 +16,10 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
+        "--port", metavar="<port>", type=int, help="TCP port for server (default: 8080)"
+    )
+
+    parser.add_argument(
         "--web-client-path",
         metavar="<directory>",
         type=pathlib.Path,
@@ -31,7 +35,7 @@ def main():
 
     args = parser.parse_args()
     logging.basicConfig(level=LOG_LEVEL_MAP[args.log_level])
-    serve(args.web_client_path)
+    serve(args.port, args.web_client_path)
 
 
 if __name__ == "__main__":
