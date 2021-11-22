@@ -6,6 +6,7 @@ FROM mcr.microsoft.com/vscode/devcontainers/base:0-${VARIANT}
 
 # ** [Optional] Uncomment this section to install additional packages. **
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends python3-aiohttp black flake8 \
+    && apt-get -y install --no-install-recommends \
+    python3-aiohttp python3-sdnotify black flake8 \
     devscripts debhelper dh-python git-buildpackage dput bash-completion
 

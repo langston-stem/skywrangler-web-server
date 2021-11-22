@@ -1,13 +1,15 @@
 [Unit]
 Description=Sky Wrangler web server service
-After=network.target skywrangler-web-server.socket
-Requires=skywrangler-web-server.socket
+After=network.target
+Before=nginx.service
 
 [Service]
-Type=simple
+Type=notify
+Environment=PYTHONUNBUFFERED=true
 User=skywrangler-web-server
 ExecStart=/usr/bin/skywrangler-web-server
-TimeoutStopSec=5
+RuntimeDirectory=skywrangler-web-server
+RuntimeDirectoryMode=0755
 
 [Install]
-WantedBy=default.target
+WantedBy=nginx.service
