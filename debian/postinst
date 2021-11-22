@@ -1,0 +1,10 @@
+
+name=#PACKAGE#
+
+case "$1" in
+  configure)
+    adduser --disabled-password --quiet --system \
+      --home /run/$name --no-create-home --group $name
+
+
+#DEBHELPER#

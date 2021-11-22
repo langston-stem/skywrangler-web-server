@@ -1,0 +1,13 @@
+[Unit]
+Description=Sky Wrangler web server service
+After=network.target skywrangler-web-server.socket
+Requires=skywrangler-web-server.socket
+
+[Service]
+Type=simple
+User=skywrangler-web-server
+ExecStart=/usr/bin/skywrangler-web-server
+TimeoutStopSec=5
+
+[Install]
+WantedBy=default.target
