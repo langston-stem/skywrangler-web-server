@@ -1,0 +1,5 @@
+[skywrangler]
+login                   = ablerobots
+fqdn                    = archive.ablerobots.com
+method                  = rsync
+incoming                = reprepro/skywrangler/upload
