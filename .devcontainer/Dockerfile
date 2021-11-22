@@ -9,4 +9,3 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends \
     python3-aiohttp python3-sdnotify black flake8 \
     devscripts debhelper dh-python git-buildpackage dput bash-completion
-

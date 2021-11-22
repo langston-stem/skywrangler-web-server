@@ -1,6 +1,5 @@
 .debhelper/
 skywrangler-web-server/
-python3-skywrangler-web-server/
 debhelper-build-stamp
 files
 *.debhelper
