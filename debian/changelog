@@ -1,5 +1,5 @@
-skywrangler-web-server (1.0.0) UNRELEASED; urgency=medium
+skywrangler-web-server (1.0.0) unstable; urgency=medium
 
   * Initial release.
 
- -- David Lechner <david@ablerobots.com>  Mon, 22 Nov 2021 01:33:05 +0000
+ -- David Lechner <david@ablerobots.com>  Mon, 22 Nov 2021 04:00:40 +0000
