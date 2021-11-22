@@ -5,6 +5,7 @@ case "$1" in
   configure)
     adduser --disabled-password --quiet --system \
       --home /run/$name --no-create-home --group $name
-
+  ;;
+esac
 
 #DEBHELPER#

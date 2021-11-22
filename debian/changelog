@@ -1,3 +1,9 @@
+skywrangler-web-server (1.0.1) UNRELEASED; urgency=medium
+
+  * Fix broken postinst script. 
+
+ -- David Lechner <david@ablerobots.com>  Mon, 22 Nov 2021 04:25:45 +0000
+
 skywrangler-web-server (1.0.0) bullseye; urgency=medium
 
   * Initial release.
