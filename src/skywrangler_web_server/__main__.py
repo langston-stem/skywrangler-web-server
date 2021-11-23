@@ -2,6 +2,7 @@ import argparse
 import logging
 import pathlib
 
+from . import __version__
 from .server import serve
 
 LOG_LEVEL_MAP = {
@@ -14,6 +15,8 @@ LOG_LEVEL_MAP = {
 
 def main():
     parser = argparse.ArgumentParser()
+
+    parser.add_argument("--version", action="version", version=__version__)
 
     parser.add_argument(
         "--port", metavar="<port>", type=int, help="TCP port for server (default: 8080)"
