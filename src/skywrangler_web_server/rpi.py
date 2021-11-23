@@ -18,7 +18,7 @@ class RPi:
             return Node.parse(f.read())
 
     @property
-    def _avahi_entry_grouop_xml(self) -> Node:
+    def _avahi_entry_group_xml(self) -> Node:
         with open(
             "/usr/share/dbus-1/interfaces/org.freedesktop.Avahi.EntryGroup.xml"
         ) as f:
@@ -48,7 +48,7 @@ class RPi:
         avahi_server = obj.get_interface("org.freedesktop.Avahi.Server")
         entry_path = await avahi_server.call_entry_group_new()
         obj = self._bus.get_proxy_object(
-            "org.freedesktop.Avahi", entry_path, self._avahi_entry_grouop_xml
+            "org.freedesktop.Avahi", entry_path, self._avahi_entry_group_xml
         )
         entry_group = obj.get_interface("org.freedesktop.Avahi.EntryGroup")
         await entry_group.call_add_service(
