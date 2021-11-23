@@ -1,5 +1,8 @@
+default_host_main = skywrangler
+
 [skywrangler]
 login                   = ablerobots
 fqdn                    = archive.ablerobots.com
 method                  = rsync
 incoming                = reprepro/skywrangler/upload
+post_upload_command     = ssh ablerobots@archive.ablerobots.com -C 'reprepro -b reprepro/skywrangler processincoming upload'

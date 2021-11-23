@@ -4,15 +4,15 @@
 
 set -e
 
-script_dir=$(dirname $(readlink -f $0))
+py_version=$(python3 setup.py --version)
+deb_version=$(dpkg-parsechangelog -S Version)
 
-source=$(dpkg-parsechangelog -S Source)
-version=$(dpkg-parsechangelog -S Version)
-arch=$(dpkg-architecture --query DEB_HOST_ARCH)
+if [[ "$py_version" != "$deb_version" ]]; then
+    echo "version mismatch - py: $py_version != deb: $deb_version"
+    exit 1
+fi
 
-debuild -d
-debsign ../${source}_${version}_${arch}.changes
-dput -c ${script_dir}/dput.cf skywrangler ../${source}_${version}_${arch}.changes
-ssh ablerobots@archive.ablerobots.com -C 'reprepro -b reprepro/skywrangler processincoming upload'
 gbp buildpackage --git-tag-only
+debuild
+debrelease
 git push --tags

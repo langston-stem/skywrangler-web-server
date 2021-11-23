@@ -10,7 +10,20 @@
 	},
 
 	// Set *default* container specific settings.json values on container create.
-	"settings": {},
+	"settings": {
+		// Ensure VS Code uses the right shell for terminals and tasks.
+		"terminal.integrated.defaultProfile.linux": "bash",
+		"terminal.integrated.profiles.linux": {
+			"bash": {
+				"path": "/bin/bash",
+				"args": [
+					// Run login bash shell in VSCode integrated terminal
+					// needed to include /etc/profile and friends
+					"--login"
+				]
+			}
+		}
+	},
 
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": ["ms-python.python"],

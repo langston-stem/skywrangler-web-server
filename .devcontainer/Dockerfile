@@ -17,8 +17,11 @@ RUN mkdir -p /usr/local/share/keyrings && gpg --list-keys \
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends dbus \
     python3-aiohttp python3-dbus-next python3-sdnotify black flake8 \
-    devscripts debhelper dh-python git-buildpackage dput bash-completion
+    devscripts debhelper dh-python git-buildpackage dput lintian bash-completion
 
+COPY devscripts.conf /etc/
+COPY dput.cf /etc/
+COPY git-to-deb.sh /etc/profile.d/
 COPY mock-logind /usr/local/sbin/
 COPY org.freedesktop.login1.conf /etc/dbus-1/system.d/
 COPY org.freedesktop.login1.service /usr/local/share/dbus-1/system-services/
