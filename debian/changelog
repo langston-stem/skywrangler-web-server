@@ -2,6 +2,7 @@ skywrangler-web-server (1.1.0+1) UNRELEASED; urgency=medium
 
   * Fix nginx upstream server name to match client.
   * Fix missing shebang in postinst script.
+  * Drop service [Install] section.
 
  -- David Lechner <david@ablerobots.com>  Tue, 23 Nov 2021 05:09:25 +0000
 
