@@ -8,7 +8,7 @@ Homepage: https://github.com/dlech/skywrangler-web-server
 
 Package: skywrangler-web-server
 Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends}
+Depends: adduser, ${misc:Depends}, ${python3:Depends}
 Recommends: nginx
 Description: Sky Wrangler web server
  Web server for Sky Wrangler onboard computer.
