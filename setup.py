@@ -9,7 +9,7 @@ setuptools.setup(
     package_dir={"": "src"},
     packages=setuptools.find_packages(where="src"),
     python_requires=">=3.9",
-    install_requires=["aiohttp", "sdnotify"],
+    install_requires=["aiohttp", "dbus-next", "sdnotify"],
     entry_points={
         "console_scripts": [
             "skywrangler-web-server = skywrangler_web_server.__main__:main"

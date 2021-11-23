@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+import asyncio
+import logging
+
+from dbus_next.aio import MessageBus
+from dbus_next.service import ServiceInterface, method
+from dbus_next.constants import BusType
+
+
+logger = logging.getLogger()
+
+
+class SystemdLogindManager(ServiceInterface):
+    @method()
+    def PowerOff(self, interactive: "b") -> None:
+        logger.info("power off requested")
+
+
+async def main() -> None:
+    logger.info("starting...")
+    bus = await MessageBus(bus_type=BusType.SYSTEM).connect()
+    interface = SystemdLogindManager("org.freedesktop.login1.Manager")
+    bus.export("/org/freedesktop/login1", interface)
+
+    await bus.request_name("org.freedesktop.login1")
+    logger.info("ready.")
+
+    # run forever
+    await asyncio.Event().wait()
+
+
+if __name__ == "__main__":
+    logging.basicConfig(
+        filename="/var/log/mock-logind.log",
+        format="%(asctime)s %(levelname)-8s %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        level=logging.INFO,
+    )
+    asyncio.run(main())

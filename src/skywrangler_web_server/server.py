@@ -10,6 +10,9 @@ from .rpi import RPi
 
 
 async def on_startup(app: web.Application) -> None:
+    rpi: RPi = app["rpi"]
+    await rpi.async_init()
+
     # FIXME: how to wait for socket to become ready?
     # Without this delay, nginx will fail to start up because it can't see the
     # server. It would be better if we could find the actual condition to test

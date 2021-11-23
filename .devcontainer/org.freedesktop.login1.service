@@ -1,0 +1,5 @@
+[D-BUS Service]
+Name=org.freedesktop.login1
+Exec=/usr/local/sbin/mock-logind
+User=root
+SystemdService=dbus-org.freedesktop.login1.service

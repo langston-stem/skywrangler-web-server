@@ -16,7 +16,7 @@ async def handle_test(request: web.Request) -> web.Response:
 async def handle_shutdown(request: web.Request) -> web.Response:
     try:
         rpi: RPi = request.app["rpi"]
-        rpi.shutdown()
+        await rpi.shutdown()
         return web.Response()
     except Exception as ex:
         return web.Response(status=HTTPStatus.INTERNAL_SERVER_ERROR, reason=str(ex))
