@@ -7,8 +7,12 @@ set -e
 py_version=$(python3 setup.py --version)
 deb_version=$(dpkg-parsechangelog -S Version)
 
-if [[ "$py_version" != "$deb_version" ]]; then
-    echo "version mismatch - py: $py_version != deb: $deb_version"
+# ensure that python package version matches debian package version
+# debian package is allowed to have "+*" suffix and still be considered
+# the same version (i.e. only the debian packaging changed and not the
+# python package)
+if [[ "${py_version}" != "${deb_version/+*/}" ]]; then
+    echo "version mismatch - py: ${py_version} != deb: ${deb_version}"
     exit 1
 fi
 
