@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: David Lechner <david@ablerobots.com>
 Build-Depends: debhelper-compat (= 12), dh-python, python3
 Standards-Version: 4.5.0
-Homepage: <https://github.com/dlech/skywrangler-web-server>
+Homepage: https://github.com/dlech/skywrangler-web-server
 
 Package: skywrangler-web-server
 Architecture: all
