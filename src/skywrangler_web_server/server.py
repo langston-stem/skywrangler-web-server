@@ -17,8 +17,9 @@ async def on_startup(app: web.Application) -> None:
     # Without this delay, nginx will fail to start up because it can't see the
     # server. It would be better if we could find the actual condition to test
     # for instead of using an arbitrary delay.
-    await asyncio.sleep(10)
-    SystemdNotifier().notify("READY=1")
+    asyncio.get_running_loop().call_later(
+        10, lambda: SystemdNotifier().notify("READY=1")
+    )
 
 
 async def root_handler(request):
