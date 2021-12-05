@@ -1,3 +1,9 @@
+skywrangler-web-server (1.2.0+2) UNRELEASED; urgency=medium
+
+  * Use SSE for /api/status.
+
+ -- David Lechner <david@ablerobots.com>  Sun, 05 Dec 2021 19:40:21 +0000
+
 skywrangler-web-server (1.2.0+1) bullseye; urgency=medium
 
   * Add avahi service registration.

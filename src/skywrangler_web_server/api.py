@@ -1,15 +1,24 @@
+import asyncio
+import logging
 from http import HTTPStatus
 
 from aiohttp import web
+from aiohttp_sse import sse_response
 
 from .rpi import RPi
 
+logger = logging.getLogger(__name__)
 routes = web.RouteTableDef()
 
 
 @routes.get("/api/status")
 async def handle_test(request: web.Request) -> web.Response:
-    return web.json_response({})
+    async with sse_response(request) as response:
+        while True:
+            await response.send("", event="heartbeat")
+            await asyncio.sleep(10)
+
+    return response
 
 
 @routes.post("/api/shutdown")
