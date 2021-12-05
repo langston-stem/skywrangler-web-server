@@ -138,3 +138,6 @@ cython_debug/
 
 # Debian packaging
 .pybuild/
+
+# macOS
+.DS_Store
