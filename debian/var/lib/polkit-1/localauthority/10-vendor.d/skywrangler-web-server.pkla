@@ -1,0 +1,4 @@
+[skywrangler-web-server can poweroff]
+Identity=unix-user:skywrangler-web-server
+Action=org.freedesktop.login1.power-off-multiple-sessions
+ResultAny=yes
