@@ -22,7 +22,12 @@
 					"--login"
 				]
 			}
-		}
+		},
+		"[python]": {
+			"editor.formatOnSave": true,
+			"editor.defaultFormatter": "ms-python.python"
+		},
+		"python.formatting.provider": "black"
 	},
 
 	// Add the IDs of extensions you want installed when the container is created.
