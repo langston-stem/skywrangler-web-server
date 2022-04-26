@@ -44,8 +44,6 @@
 		"--network-alias=skywrangler-web-server"
 	],
 
-	"initializeCommand": "docker network create skywrangler-web || exit 0",
-
 	// needed for debuild to have permission ot use the directory
 	"onCreateCommand": "sudo chmod 777 /workspaces",
 
