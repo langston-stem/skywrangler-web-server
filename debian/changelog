@@ -1,3 +1,9 @@
+skywrangler-web-server (1.4.0) bullseye; urgency=medium
+
+  * drone: add support for autopilot
+
+ -- David Lechner <david@ablerobots.com>  Thu, 28 Apr 2022 19:17:41 +0000
+
 skywrangler-web-server (1.3.0) bullseye; urgency=medium
 
   * Use SSE for /api/status.
