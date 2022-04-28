@@ -1,3 +1,10 @@
+skywrangler-web-server (1.4.1) bullseye; urgency=medium
+
+  * debian: add mavsdk-server depedency
+  * setup.py: add "mavsdk" to install_requires
+
+ -- David Lechner <david@ablerobots.com>  Thu, 28 Apr 2022 19:32:19 +0000
+
 skywrangler-web-server (1.4.0) bullseye; urgency=medium
 
   * drone: add support for autopilot
