@@ -16,7 +16,8 @@ RUN mkdir -p /usr/local/share/keyrings && gpg --list-keys \
 # install depedencies
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends dbus avahi-daemon \
-    python3-aiohttp python3-aiohttp-sse python3-dbus-next python3-sdnotify black flake8 \
+    python3-aiohttp python3-aiohttp-sse python3-dbus-next python3-mavsdk python3-sdnotify \
+    black flake8 \
     devscripts debhelper dh-python git-buildpackage dput lintian bash-completion
 
 COPY devscripts.conf /etc/
