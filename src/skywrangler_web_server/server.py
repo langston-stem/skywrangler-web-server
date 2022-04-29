@@ -4,7 +4,6 @@ import weakref
 
 from aiohttp import web
 from aiohttp.typedefs import PathLike
-from aiohttp_sse import EventSourceResponse
 from sdnotify import SystemdNotifier
 
 from .api import routes

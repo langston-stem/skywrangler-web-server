@@ -3,7 +3,6 @@ import logging
 from typing import Optional
 
 from mavsdk import System
-from mavsdk.telemetry import LandedState
 
 # causes spurious errors
 del System.__del__
