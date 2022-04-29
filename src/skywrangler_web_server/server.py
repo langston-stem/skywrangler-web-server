@@ -12,10 +12,14 @@ from .rpi import RPi
 
 
 async def on_startup(app: web.Application) -> None:
-    drone: Drone = app["drone"]
-    rpi: RPi = app["rpi"]
+    # track "forever" tasks so we can cancel on shutdown
+    app["tasks"] = weakref.WeakSet()
 
-    await asyncio.gather(drone.async_init(), rpi.async_init())
+    app["drone"] = Drone()
+
+    rpi = RPi()
+    await rpi.async_init()
+    app["rpi"] = rpi
 
     # FIXME: how to wait for socket to become ready?
     # Without this delay, nginx will fail to start up because it can't see the
@@ -59,11 +63,5 @@ def serve(port: Optional[int] = None, static_path: Optional[PathLike] = None) ->
     if static_path:
         app.router.add_route("*", "/", root_handler)
         app.router.add_static("/", static_path)
-
-    # track "forever" tasks so we can cancel on shutdown
-    app["tasks"] = weakref.WeakSet()
-
-    app["drone"] = Drone()
-    app["rpi"] = RPi()
 
     web.run_app(app, port=port)

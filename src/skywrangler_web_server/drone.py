@@ -18,11 +18,13 @@ class Drone:
         self.system = System(mavsdk_server_address="localhost")
         self._mission_task = None
 
-    async def async_init(self) -> None:
-        """
-        Performs async initialization.
-        """
-        await self.system.connect()
+        # This will block forever if there is no autopilot detected, so we run
+        # it in a background task so the server doesn't fail to start when
+        # there is no autopilot connected.
+        logger.info("waiting for drone connection...")
+        asyncio.create_task(self.system.connect()).add_done_callback(
+            lambda t: logger.info("drone connected")
+        )
 
     async def _fly_mission(self) -> None:
         # TODO: connection check?
