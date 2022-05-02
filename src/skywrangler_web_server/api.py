@@ -190,7 +190,7 @@ async def handle_drone_status(request: web.Request) -> web.Response:
 
 
 @routes.post("/api/drone/fly_mission")
-async def handle_shutdown(request: web.Request) -> web.Response:
+async def handle_drone_fly_mission(request: web.Request) -> web.Response:
     try:
         drone: Drone = request.app["drone"]
         # TODO: use sse to send progress updates
@@ -202,7 +202,7 @@ async def handle_shutdown(request: web.Request) -> web.Response:
 
 
 @routes.post("/api/drone/return")
-async def handle_shutdown(request: web.Request) -> web.Response:
+async def handle_drone_return(request: web.Request) -> web.Response:
     try:
         drone: Drone = request.app["drone"]
         await drone.return_to_launch()
