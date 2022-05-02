@@ -32,7 +32,7 @@ def main():
     parser.add_argument(
         "--log-level",
         choices=LOG_LEVEL_MAP.keys(),
-        default="warning",
+        default="info",
         help="log level (default: %(default)s)",
     )
 
