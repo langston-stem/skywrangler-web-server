@@ -89,9 +89,6 @@ async def monitor_is_all_health_ok(
         async with lock:
             await response.send(json.dumps(ok), "is_health_all_ok")
 
-        # this one updates quite frequently, so rate limit it
-        await asyncio.sleep(1)
-
 
 async def monitor_health(
     drone: Drone, response: EventSourceResponse, lock: asyncio.Lock
