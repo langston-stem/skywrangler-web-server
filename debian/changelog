@@ -1,3 +1,10 @@
+skywrangler-web-server (1.4.2) bullseye; urgency=medium
+
+  * debian: drop mavsdk-server depedency
+  * drone: don't block waiting for connection on startup
+
+ -- David Lechner <david@ablerobots.com>  Mon, 02 May 2022 15:05:56 +0000
+
 skywrangler-web-server (1.4.1) bullseye; urgency=medium
 
   * debian: add mavsdk-server depedency
