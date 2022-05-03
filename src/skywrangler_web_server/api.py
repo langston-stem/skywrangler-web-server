@@ -69,7 +69,7 @@ async def monitor_is_connected(
         logger.debug(f"connection_state: {state}")
 
         async with lock:
-            await response.send(json.dumps(state.is_connected), "is_connected")
+            await response.send(json.dumps(state.is_connected), event="isConnected")
 
 
 async def monitor_is_all_health_ok(
@@ -87,7 +87,7 @@ async def monitor_is_all_health_ok(
         logger.debug(f"health_all_ok: {ok}")
 
         async with lock:
-            await response.send(json.dumps(ok), "is_health_all_ok")
+            await response.send(json.dumps(ok), event="isHealthAllOk")
 
 
 async def monitor_health(
@@ -108,16 +108,16 @@ async def monitor_health(
             await response.send(
                 json.dumps(
                     {
-                        "is_accelerometer_calibration_ok": health.is_accelerometer_calibration_ok,
-                        "is_armable": health.is_armable,
-                        "is_global_position_ok": health.is_global_position_ok,
-                        "is_gyrometer_calibration_ok": health.is_gyrometer_calibration_ok,
-                        "is_home_position_ok": health.is_home_position_ok,
-                        "is_local_position_ok": health.is_local_position_ok,
-                        "is_magnetometer_calibration_ok": health.is_magnetometer_calibration_ok,
+                        "isAccelerometerCalibrationOk": health.is_accelerometer_calibration_ok,
+                        "isArmable": health.is_armable,
+                        "isGlobalPositionOk": health.is_global_position_ok,
+                        "isGyrometerCalibrationOk": health.is_gyrometer_calibration_ok,
+                        "isHomePositionOk": health.is_home_position_ok,
+                        "isLocalPositionOk": health.is_local_position_ok,
+                        "isMagnetometerCalibrationOk": health.is_magnetometer_calibration_ok,
                     }
                 ),
-                "health",
+                event="health",
             )
 
 
@@ -136,7 +136,7 @@ async def monitor_in_air(
         logger.debug(f"is_in_air: {is_in_air}")
 
         async with lock:
-            await response.send(json.dumps(is_in_air), "is_in_air")
+            await response.send(json.dumps(is_in_air), event="isInAir")
 
 
 async def monitor_status_text(
@@ -154,7 +154,7 @@ async def monitor_status_text(
         logger.debug(f"status_text: {text}")
 
         async with lock:
-            await response.send(json.dumps(text.text), "status_text")
+            await response.send(json.dumps(text.text), event="statusText")
 
 
 @routes.get("/api/drone/status")
