@@ -1,3 +1,10 @@
+skywrangler-web-server (1.4.4) bullseye; urgency=medium
+
+  * api: fix duplicate function names
+  * api: fix drone status event names
+
+ -- David Lechner <david@ablerobots.com>  Tue, 03 May 2022 19:08:32 +0000
+
 skywrangler-web-server (1.4.3) bullseye; urgency=medium
 
   * skywrangler-web-server: change default log level to info

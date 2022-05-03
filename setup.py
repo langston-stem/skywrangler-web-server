@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="skywrangler-web-server",
-    version="1.4.3",
+    version="1.4.4",
     author="David Lechner",
     author_email="david@ablerobots.com",
     description="Sky Wrangler onboard computer web server",
