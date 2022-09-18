@@ -1,0 +1,43 @@
+#!/bin/sh
+
+set -e
+
+NAME=mavsdk-server
+DAEMON=/usr/bin/mavsdk_server
+DAEMON_OPTS=""
+LOG_FILE=/var/log/$NAME.log
+
+do_start() {
+    # stdbuf is needed to prevent buffering issues so we can tail -f the log file
+    /sbin/start-stop-daemon --start --background --no-close --exec $DAEMON \
+        --startas /usr/bin/stdbuf -- -oL -eL $DAEMON $DAEMON_OPTS > $LOG_FILE 2>&1
+}
+
+do_stop() {
+    /sbin/start-stop-daemon --stop --oknodo --exec $DAEMON 
+}
+
+case "$1" in
+  start)
+    echo -n "Starting daemon: $NAME"
+    do_start
+    echo "."
+    ;;
+  stop)
+    echo -n "Stopping daemon: $NAME"
+    do_stop
+    echo "."
+    ;;
+  restart)
+    echo -n "Restarting daemon: $NAME"
+    do_stop
+    do_start
+    echo "."
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop|restart}"
+    exit 1
+esac
+
+exit 0

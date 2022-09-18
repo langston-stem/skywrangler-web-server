@@ -51,7 +51,7 @@
 	"onCreateCommand": "sudo chmod 777 /workspaces",
 
 	"postCreateCommand": "python3 setup.py develop --user",
-	"postStartCommand": "sudo service dbus start && sudo service avahi-daemon start",
+	"postStartCommand": "sudo service dbus start && sudo service avahi-daemon start && sudo service mavsdk-server start",
 
 	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode"

@@ -23,6 +23,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 COPY devscripts.conf /etc/
 COPY dput.cf /etc/
 COPY git-to-deb.sh /etc/profile.d/
+COPY mavsdk-server /etc/init.d/
 COPY mock-logind /usr/local/sbin/
 COPY org.freedesktop.login1.conf /etc/dbus-1/system.d/
 COPY org.freedesktop.login1.service /usr/local/share/dbus-1/system-services/
