@@ -192,9 +192,11 @@ async def handle_drone_status(request: web.Request) -> web.Response:
 @routes.post("/api/drone/fly_mission")
 async def handle_drone_fly_mission(request: web.Request) -> web.Response:
     try:
+        mission_parameters = await request.json()
+        logger.info("requested mission with: %s", mission_parameters)
         drone: Drone = request.app["drone"]
         # TODO: use sse to send progress updates
-        await drone.fly_mission()
+        await drone.fly_mission(mission_parameters)
         return web.Response()
     except Exception as ex:
         logger.exception("/api/drone/fly_mission")

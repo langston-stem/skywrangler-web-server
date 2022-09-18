@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Optional
+from typing import NamedTuple, Optional
 
 from mavsdk import System
 
@@ -8,6 +8,26 @@ from mavsdk import System
 del System.__del__
 
 logger = logging.getLogger(__name__)
+
+
+class Origin(NamedTuple):
+    """
+    The origin point - i.e. the center of the enclosure.
+    """
+
+    latitude: float
+    longitude: float
+    elevation: float
+
+
+class Parameters(NamedTuple):
+    """
+    The experiment parameters (variables).
+    """
+
+    speed: float
+    distance: float
+    angle: float
 
 
 class Drone:
@@ -26,9 +46,12 @@ class Drone:
             lambda t: logger.info("drone connected")
         )
 
-    async def _fly_mission(self) -> None:
+    async def _fly_mission(self, origin: Origin, parameters: Parameters) -> None:
         # TODO: connection check?
         # TODO: health check?
+        # TODO: use origin/parameters to create mission plan
+        logger.info("starting mission with %r %r", origin, parameters)
+
         logger.info("arming...")
         await self.system.action.arm()
         logger.info("taking off...")
@@ -45,11 +68,23 @@ class Drone:
 
         logger.info("disarmed")
 
-    async def fly_mission(self) -> None:
+    async def fly_mission(self, mission_parameters) -> None:
         if self._mission_task:
             raise RuntimeError("mission already in progress")
 
-        self._mission_task = asyncio.create_task(self._fly_mission())
+        # TODO: validate parameters
+        origin = Origin(
+            mission_parameters["origin"]["latitude"],
+            mission_parameters["origin"]["longitude"],
+            mission_parameters["origin"]["elevation"],
+        )
+        parameters = Parameters(
+            mission_parameters["parameters"]["speed"],
+            mission_parameters["parameters"]["distance"],
+            mission_parameters["parameters"]["angle"],
+        )
+
+        self._mission_task = asyncio.create_task(self._fly_mission(origin, parameters))
 
         try:
             await self._mission_task
