@@ -37,7 +37,11 @@ def main():
     )
 
     args = parser.parse_args()
-    logging.basicConfig(level=LOG_LEVEL_MAP[args.log_level])
+    logging.basicConfig(
+        format="%(asctime)s %(levelname)-8s %(name)s: %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+        level=LOG_LEVEL_MAP[args.log_level],
+    )
     serve(args.port, args.web_client_path)
 
 
