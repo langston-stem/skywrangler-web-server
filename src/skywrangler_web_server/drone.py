@@ -3,6 +3,7 @@ import logging
 from typing import NamedTuple, Optional
 
 from mavsdk import System
+from mavsdk.mission import MissionItem, MissionPlan
 
 # causes spurious errors
 del System.__del__
@@ -52,21 +53,43 @@ class Drone:
         # TODO: use origin/parameters to create mission plan
         logger.info("starting mission with %r %r", origin, parameters)
 
+        print_mission_progress_task = asyncio.ensure_future(
+            print_mission_progress(self.system)
+        )
+        running_tasks = [print_mission_progress_task]
+        termination_task = asyncio.ensure_future(
+            observe_is_in_air(self.system, running_tasks)
+        )
+
+        mission_items = []
+        mission_items.append(
+            MissionItem(
+                47.398039859999997,
+                8.5455725400000002,
+                25,
+                10,
+                True,
+                float("nan"),
+                float("nan"),
+                MissionItem.CameraAction.NONE,
+                float("nan"),
+                float("nan"),
+                float("nan"),
+                float("nan"),
+                float("nan"),
+            )
+        )
+
+        mission_plan = MissionPlan(mission_items)
+
+        logger.info("Uploading mission...")
+        await self.system.mission.upload_mission(mission_plan)
         logger.info("arming...")
         await self.system.action.arm()
-        logger.info("taking off...")
-        await self.system.action.takeoff()
-        logger.info("flying...")
-        await asyncio.sleep(30)
-        logger.info("returning...")
-        await self.system.action.return_to_launch()
+        logger.info("Starting mission...")
+        await self.system.mission.start_mission()
 
-        async for armed in self.system.telemetry.armed():
-            logger.debug(f"armed: {armed}")
-            if not armed:
-                break
-
-        logger.info("disarmed")
+        await termination_task
 
     async def fly_mission(self, mission_parameters) -> None:
         if self._mission_task:
@@ -91,13 +114,14 @@ class Drone:
         finally:
             self._mission_task = None
 
-    async def return_to_launch(self) -> None:
-        if self._mission_task:
-            logger.debug("canceling mission")
-            self._mission_task.cancel()
 
-        logger.info("returing to launch site...")
-        await self.system.action.return_to_launch()
+async def return_to_launch(self) -> None:
+    if self._mission_task:
+        logger.debug("canceling mission")
+        self._mission_task.cancel()
+
+    logger.info("returing to launch site...")
+    await self.system.action.return_to_launch()
 
 
 async def test():
@@ -105,6 +129,37 @@ async def test():
 
     await drone.async_init()
     await drone.fly_mission()
+
+
+async def print_mission_progress(drone):
+    async for mission_progress in drone.mission.mission_progress():
+        print(
+            f"Mission progress: "
+            f"{mission_progress.current}/"
+            f"{mission_progress.total}"
+        )
+
+
+async def observe_is_in_air(drone, running_tasks):
+    """Monitors whether the drone is flying or not and
+    returns after landing"""
+
+    was_in_air = False
+
+    async for is_in_air in drone.telemetry.in_air():
+        if is_in_air:
+            was_in_air = is_in_air
+
+        if was_in_air and not is_in_air:
+            for task in running_tasks:
+                task.cancel()
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    pass
+            await asyncio.get_event_loop().shutdown_asyncgens()
+
+            return
 
 
 if __name__ == "__main__":
