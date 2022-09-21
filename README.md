@@ -40,3 +40,9 @@ tail -f /var/log/mavsdk-server.log
 ```bash
 tail -f /var/log/mock-logind.log
 ```
+
+### Running tests
+
+```bash
+pytest-3
+```
