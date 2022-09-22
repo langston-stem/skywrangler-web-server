@@ -115,13 +115,13 @@ class Drone:
             self._mission_task = None
 
 
-async def return_to_launch(self) -> None:
-    if self._mission_task:
-        logger.debug("canceling mission")
-        self._mission_task.cancel()
+    async def return_to_launch(self) -> None:
+        if self._mission_task:
+            logger.debug("canceling mission")
+            self._mission_task.cancel()
 
-    logger.info("returing to launch site...")
-    await self.system.action.return_to_launch()
+        logger.info("returing to launch site...")
+        await self.system.action.return_to_launch()
 
 
 async def test():
