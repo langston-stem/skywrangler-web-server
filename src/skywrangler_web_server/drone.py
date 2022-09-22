@@ -157,7 +157,6 @@ async def observe_is_in_air(drone, running_tasks):
                     await task
                 except asyncio.CancelledError:
                     pass
-            await asyncio.get_event_loop().shutdown_asyncgens()
 
             return
 
