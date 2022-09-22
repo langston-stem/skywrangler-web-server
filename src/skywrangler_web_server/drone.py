@@ -133,10 +133,10 @@ async def test():
 
 async def print_mission_progress(drone):
     async for mission_progress in drone.mission.mission_progress():
-        print(
-            f"Mission progress: "
-            f"{mission_progress.current}/"
-            f"{mission_progress.total}"
+        logger.info(
+            "Mission progress: %d/%d",
+            mission_progress.current,
+            mission_progress.total,
         )
 
 
