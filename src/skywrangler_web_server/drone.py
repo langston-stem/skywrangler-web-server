@@ -64,8 +64,8 @@ class Drone:
         mission_items = []
         mission_items.append(
             MissionItem(
-                47.398039859999997,
-                8.5455725400000002,
+                origin.longitude,
+                origin.latitude,
                 25,
                 10,
                 True,
