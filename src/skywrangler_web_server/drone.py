@@ -64,8 +64,8 @@ class Drone:
         mission_items = []
         mission_items.append(
             MissionItem(
-                origin.longitude,
                 origin.latitude,
+                origin.longitude,
                 25,
                 10,
                 True,
@@ -113,7 +113,6 @@ class Drone:
             await self._mission_task
         finally:
             self._mission_task = None
-
 
     async def return_to_launch(self) -> None:
         if self._mission_task:
