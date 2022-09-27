@@ -44,5 +44,8 @@ tail -f /var/log/mock-logind.log
 ### Running tests
 
 ```bash
+# in devcontainer
 pytest-3
+# otherwise
+pytest
 ```
