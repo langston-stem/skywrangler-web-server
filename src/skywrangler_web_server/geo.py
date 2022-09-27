@@ -6,7 +6,6 @@ Geo reference helper functions.
 from typing import Tuple
 
 from pyproj import CRS, Transformer
-
 from pyproj.aoi import AreaOfInterest
 from pyproj.database import query_utm_crs_info
 
@@ -70,3 +69,21 @@ def utm_to_latlon(x: float, y: float, transformer: Transformer) -> Tuple[float, 
         A tuple of the latitude and longitude in degrees.
     """
     return next(transformer.itransform([(x, y)]))
+
+
+def origin_alt_to_takeoff_alt(
+    altitude: float, origin_elevation: float, takeoff_elevation: float
+) -> float:
+    """
+    Converts an altitude relative to the origin to an altitude relative to the takeoff position.
+
+    Args:
+        altitude: the target altitude relative to the origin in meters
+        origin_elevation: the elevation of the origin in meters
+        takeoff_elevation: the UAV takeoff elevation in meters
+
+    Returns:
+        The target altitude relative to the origin elevation.
+    """
+    rel_altitude = altitude - (takeoff_elevation - origin_elevation)
+    return rel_altitude
