@@ -53,14 +53,6 @@ class Drone:
         # TODO: use origin/parameters to create mission plan
         logger.info("starting mission with %r %r", origin, parameters)
 
-        print_mission_progress_task = asyncio.ensure_future(
-            print_mission_progress(self.system)
-        )
-        running_tasks = [print_mission_progress_task]
-        termination_task = asyncio.ensure_future(
-            observe_is_in_air(self.system, running_tasks)
-        )
-
         mission_items = []
         mission_items.append(
             MissionItem(
@@ -89,7 +81,13 @@ class Drone:
         logger.info("Starting mission...")
         await self.system.mission.start_mission()
 
-        await termination_task
+        # wait for drone to be disarmed to assume it has landed
+        async for armed in self.system.telemetry.armed():
+            logger.debug(f"armed: {armed}")
+            if not armed:
+                break
+
+        logger.info("disarmed")
 
     async def fly_mission(self, mission_parameters) -> None:
         if self._mission_task:
@@ -128,36 +126,6 @@ async def test():
 
     await drone.async_init()
     await drone.fly_mission()
-
-
-async def print_mission_progress(drone):
-    async for mission_progress in drone.mission.mission_progress():
-        logger.info(
-            "Mission progress: %d/%d",
-            mission_progress.current,
-            mission_progress.total,
-        )
-
-
-async def observe_is_in_air(drone, running_tasks):
-    """Monitors whether the drone is flying or not and
-    returns after landing"""
-
-    was_in_air = False
-
-    async for is_in_air in drone.telemetry.in_air():
-        if is_in_air:
-            was_in_air = is_in_air
-
-        if was_in_air and not is_in_air:
-            for task in running_tasks:
-                task.cancel()
-                try:
-                    await task
-                except asyncio.CancelledError:
-                    pass
-
-            return
 
 
 if __name__ == "__main__":
