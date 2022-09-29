@@ -5,10 +5,14 @@ from typing import NamedTuple, Optional
 from mavsdk import System
 from mavsdk.mission import MissionItem, MissionPlan
 
+from .geo import origin_alt_to_takeoff_alt, dist_ang_to_horiz_vert
+
 # causes spurious errors
 del System.__del__
 
 logger = logging.getLogger(__name__)
+
+SAFE_ALTITUDE = 30  # meters
 
 
 class Origin(NamedTuple):
@@ -53,13 +57,58 @@ class Drone:
         # TODO: use origin/parameters to create mission plan
         logger.info("starting mission with %r %r", origin, parameters)
 
+        horizontal, vertical = dist_ang_to_horiz_vert(
+            parameters.distance, parameters.angle
+        )
+        async for position in self.system.telemetry.home():
+            break
+
         mission_items = []
+        # Take off to safe altitude
+        mission_items.append(
+            MissionItem(
+                float("nan"),
+                float("nan"),
+                SAFE_ALTITUDE,
+                parameters.speed,
+                True,
+                float("nan"),
+                float("nan"),
+                MissionItem.CameraAction.NONE,
+                float("nan"),
+                float("nan"),
+                float("nan"),
+                float("nan"),
+                float("nan"),
+            )
+        )
+        # Flies at requested speed and safe altitude to origin point
         mission_items.append(
             MissionItem(
                 origin.latitude,
                 origin.longitude,
-                25,
-                10,
+                SAFE_ALTITUDE,
+                float("nan"),
+                True,
+                float("nan"),
+                float("nan"),
+                MissionItem.CameraAction.NONE,
+                float("nan"),
+                float("nan"),
+                float("nan"),
+                float("nan"),
+                float("nan"),
+            )
+        )
+        # descend to vertical atitude above the origin
+        mission_items.append(
+            MissionItem(
+                origin.latitude,
+                origin.longitude,
+                origin_alt_to_takeoff_alt(
+                    vertical, origin.elevation, position.absolute_altitude_m
+                ),
+                float("nan"),
                 True,
                 float("nan"),
                 float("nan"),
