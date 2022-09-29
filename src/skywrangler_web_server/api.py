@@ -151,10 +151,13 @@ async def monitor_status_text(
         lock: Prevents concurrent ``response.send()`` calls.
     """
     async for text in drone.system.telemetry.status_text():
-        logger.debug(f"status_text: {text}")
+        logger.info(f"status_text: {text}")
 
         async with lock:
-            await response.send(json.dumps(text.text), event="statusText")
+            await response.send(
+                json.dumps({"text": text.text, "type": text.type.name}),
+                event="statusText",
+            )
 
 
 @routes.get("/api/drone/status")
