@@ -2,7 +2,7 @@
 Geo reference helper functions.
 """
 
-
+from math import sin, cos, pi
 from typing import Tuple
 
 from pyproj import CRS, Transformer
@@ -87,3 +87,19 @@ def origin_alt_to_takeoff_alt(
     """
     rel_altitude = altitude - (takeoff_elevation - origin_elevation)
     return rel_altitude
+
+
+def dist_ang_to_horiz_vert(distance: float, angle: float) -> Tuple[float, float]:
+    """
+    Converts a distance and angle into horizontal and vertical components.
+
+    Args:
+        distance: The distance in meters.
+        angle: The angle from the horizontal in degrees.
+
+    Returns:
+        A tuple of the horizontal and vertical components in meters.
+    """
+    horizontal = cos(angle * pi / 180) * distance
+    vertical = sin(angle * pi / 180) * distance
+    return horizontal, vertical
