@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 from http import HTTPStatus
+from typing import TypedDict
 import weakref
 
 from aiohttp import web
@@ -54,59 +55,57 @@ async def handle_shutdown(request: web.Request) -> web.Response:
         return web.Response(status=HTTPStatus.INTERNAL_SERVER_ERROR, reason=str(ex))
 
 
-async def monitor_is_connected(
-    drone: Drone, response: EventSourceResponse, lock: asyncio.Lock
-):
+class DroneStatusEvent(TypedDict):
+    data: str
+    event: str
+
+
+async def monitor_is_connected(drone: Drone, queue: asyncio.Queue[DroneStatusEvent]):
     """
     Subscribes to drone connection_state events.
 
     Args:
         drone: The drone instance.
-        resposne: The SSE response.
-        lock: Prevents concurrent ``response.send()`` calls.
+        queue: The event queue.
     """
     async for state in drone.system.core.connection_state():
         logger.debug(f"connection_state: {state}")
 
-        async with lock:
-            await response.send(json.dumps(state.is_connected), event="isConnected")
+        await queue.put(
+            DroneStatusEvent(data=json.dumps(state.is_connected), event="isConnected")
+        )
 
 
 async def monitor_is_all_health_ok(
-    drone: Drone, response: EventSourceResponse, lock: asyncio.Lock
+    drone: Drone, queue: asyncio.Queue[DroneStatusEvent]
 ):
     """
     Subscribes to drone is_health_all_ok events.
 
     Args:
         drone: The drone instance.
-        resposne: The SSE response.
-        lock: Prevents concurrent ``response.send()`` calls.
+        queue: The event queue.
     """
     async for ok in drone.system.telemetry.health_all_ok():
         logger.debug(f"health_all_ok: {ok}")
 
-        async with lock:
-            await response.send(json.dumps(ok), event="isHealthAllOk")
+        await queue.put(DroneStatusEvent(data=json.dumps(ok), event="isHealthAllOk"))
 
 
-async def monitor_health(
-    drone: Drone, response: EventSourceResponse, lock: asyncio.Lock
-):
+async def monitor_health(drone: Drone, queue: asyncio.Queue[DroneStatusEvent]):
     """
     Subscribes to drone health events.
 
     Args:
         drone: The drone instance.
-        resposne: The SSE response.
-        lock: Prevents concurrent ``response.send()`` calls.
+        queue: The event queue.
     """
     async for health in drone.system.telemetry.health():
         logger.debug(f"health: {health}")
 
-        async with lock:
-            await response.send(
-                json.dumps(
+        await queue.put(
+            DroneStatusEvent(
+                data=json.dumps(
                     {
                         "isAccelerometerCalibrationOk": health.is_accelerometer_calibration_ok,
                         "isArmable": health.is_armable,
@@ -119,45 +118,40 @@ async def monitor_health(
                 ),
                 event="health",
             )
+        )
 
 
-async def monitor_in_air(
-    drone: Drone, response: EventSourceResponse, lock: asyncio.Lock
-):
+async def monitor_in_air(drone: Drone, queue: asyncio.Queue[DroneStatusEvent]):
     """
     Subscribes to drone in_air events.
 
     Args:
         drone: The drone instance.
-        resposne: The SSE response.
-        lock: Prevents concurrent ``response.send()`` calls.
+        queue: The event queue.
     """
     async for is_in_air in drone.system.telemetry.in_air():
         logger.debug(f"is_in_air: {is_in_air}")
 
-        async with lock:
-            await response.send(json.dumps(is_in_air), event="isInAir")
+        await queue.put(DroneStatusEvent(data=json.dumps(is_in_air), event="isInAir"))
 
 
-async def monitor_status_text(
-    drone: Drone, response: EventSourceResponse, lock: asyncio.Lock
-):
+async def monitor_status_text(drone: Drone, queue: asyncio.Queue[DroneStatusEvent]):
     """
     Subscribes to drone status_text events.
 
     Args:
         drone: The drone instance.
-        resposne: The SSE response.
-        lock: Prevents concurrent ``response.send()`` calls.
+        queue: The event queue.
     """
     async for text in drone.system.telemetry.status_text():
         logger.info(f"status_text: {text}")
 
-        async with lock:
-            await response.send(
-                json.dumps({"text": text.text, "type": text.type.name}),
+        await queue.put(
+            DroneStatusEvent(
+                data=json.dumps({"text": text.text, "type": text.type.name}),
                 event="statusText",
             )
+        )
 
 
 @routes.get("/api/drone/status")
@@ -165,18 +159,23 @@ async def handle_drone_status(request: web.Request) -> web.Response:
     try:
         tasks: weakref.WeakSet[asyncio.Future] = request.app["tasks"]
         drone: Drone = request.app["drone"]
-
-        lock = asyncio.Lock()
+        queue = asyncio.Queue[DroneStatusEvent]()
 
         response: EventSourceResponse
         async with sse_response(request) as response:
 
+            async def process_queue():
+                while True:
+                    event = await queue.get()
+                    await response.send(**event)
+
             task = asyncio.gather(
-                monitor_is_connected(drone, response, lock),
-                monitor_is_all_health_ok(drone, response, lock),
-                monitor_health(drone, response, lock),
-                monitor_in_air(drone, response, lock),
-                monitor_status_text(drone, response, lock),
+                process_queue(),
+                monitor_is_connected(drone, queue),
+                monitor_is_all_health_ok(drone, queue),
+                monitor_health(drone, queue),
+                monitor_in_air(drone, queue),
+                monitor_status_text(drone, queue),
             )
 
             tasks.add(task)
