@@ -13,6 +13,7 @@ del System.__del__
 logger = logging.getLogger(__name__)
 
 SAFE_ALTITUDE = 30  # meters
+NO_VALUE = float("nan")
 
 
 class Origin(NamedTuple):
@@ -54,70 +55,74 @@ class Drone:
     async def _fly_mission(self, origin: Origin, parameters: Parameters) -> None:
         # TODO: connection check?
         # TODO: health check?
-        # TODO: use origin/parameters to create mission plan
         logger.info("starting mission with %r %r", origin, parameters)
 
         horizontal, vertical = dist_ang_to_horiz_vert(
             parameters.distance, parameters.angle
         )
-        async for position in self.system.telemetry.home():
+
+        async for home_position in self.system.telemetry.home():
             break
 
+        # mission items need altitudes relative to takeoff altitude
+        relative_vertical = origin_alt_to_takeoff_alt(
+            vertical, origin.elevation, home_position.absolute_altitude_m
+        )
+
         mission_items = []
+
         # Take off to safe altitude
         mission_items.append(
             MissionItem(
-                float("nan"),
-                float("nan"),
-                SAFE_ALTITUDE,
-                parameters.speed,
-                True,
-                float("nan"),
-                float("nan"),
-                MissionItem.CameraAction.NONE,
-                float("nan"),
-                float("nan"),
-                float("nan"),
-                float("nan"),
-                float("nan"),
+                latitude_deg=NO_VALUE,
+                longitude_deg=NO_VALUE,
+                relative_altitude_m=SAFE_ALTITUDE,
+                speed_m_s=parameters.speed,
+                is_fly_through=True,
+                gimbal_pitch_deg=NO_VALUE,
+                gimbal_yaw_deg=NO_VALUE,
+                camera_action=MissionItem.CameraAction.NONE,
+                loiter_time_s=NO_VALUE,
+                camera_photo_interval_s=NO_VALUE,
+                acceptance_radius_m=NO_VALUE,
+                yaw_deg=NO_VALUE,
+                camera_photo_distance_m=NO_VALUE,
             )
         )
         # Flies at requested speed and safe altitude to origin point
         mission_items.append(
             MissionItem(
-                origin.latitude,
-                origin.longitude,
-                SAFE_ALTITUDE,
-                float("nan"),
-                True,
-                float("nan"),
-                float("nan"),
-                MissionItem.CameraAction.NONE,
-                float("nan"),
-                float("nan"),
-                float("nan"),
-                float("nan"),
-                float("nan"),
+                latitude_deg=origin.latitude,
+                longitude_deg=origin.longitude,
+                relative_altitude_m=SAFE_ALTITUDE,
+                speed_m_s=NO_VALUE,
+                is_fly_through=True,
+                gimbal_pitch_deg=NO_VALUE,
+                gimbal_yaw_deg=NO_VALUE,
+                camera_action=MissionItem.CameraAction.NONE,
+                loiter_time_s=NO_VALUE,
+                camera_photo_interval_s=NO_VALUE,
+                acceptance_radius_m=NO_VALUE,
+                yaw_deg=NO_VALUE,
+                camera_photo_distance_m=NO_VALUE,
             )
         )
         # descend to vertical atitude above the origin
         mission_items.append(
             MissionItem(
-                origin.latitude,
-                origin.longitude,
-                origin_alt_to_takeoff_alt(
-                    vertical, origin.elevation, position.absolute_altitude_m
-                ),
-                float("nan"),
-                True,
-                float("nan"),
-                float("nan"),
-                MissionItem.CameraAction.NONE,
-                float("nan"),
-                float("nan"),
-                float("nan"),
-                float("nan"),
-                float("nan"),
+                latitude_deg=origin.latitude,
+                longitude_deg=origin.longitude,
+                relative_altitude_m=relative_vertical,
+                speed_m_s=NO_VALUE,
+                is_fly_through=False,
+                gimbal_pitch_deg=NO_VALUE,
+                gimbal_yaw_deg=NO_VALUE,
+                camera_action=MissionItem.CameraAction.NONE,
+                loiter_time_s=NO_VALUE,
+                camera_photo_interval_s=NO_VALUE,
+                acceptance_radius_m=0.005,
+                yaw_deg=NO_VALUE,
+                camera_photo_distance_m=NO_VALUE,
             )
         )
 
