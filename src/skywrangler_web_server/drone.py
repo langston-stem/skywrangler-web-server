@@ -6,7 +6,7 @@ import rx.core.typing as rx_typing
 import rx.operators as op
 from mavsdk import System
 from mavsdk.core import ConnectionState
-from mavsdk.mission import MissionItem, MissionPlan
+from mavsdk.mission import MissionItem, MissionPlan, MissionProgress
 from mavsdk.telemetry import Battery, GpsInfo, Health, LandedState, Position, StatusText
 from rx.core import Observable
 from rx.subject import BehaviorSubject, Subject
@@ -108,6 +108,17 @@ class Drone:
             asyncio.create_task(
                 monitor_generator(
                     self.connection_state, self.system.core.connection_state
+                )
+            )
+        )
+
+        self.mission_progress: rx_typing.Observable[MissionProgress] = BehaviorSubject(
+            False
+        )
+        self._subcription_tasks.append(
+            asyncio.create_task(
+                monitor_generator(
+                    self.mission_progress, self.system.mission.mission_progress
                 )
             )
         )
@@ -265,11 +276,6 @@ class Drone:
         await self.system.action.arm()
         logger.info("Starting mission...")
         await self.system.mission.start_mission()
-
-        # wait for drone to be disarmed to assume it has landed
-        await wait_one(self.armed, op.filter(lambda x: not x))
-
-        logger.info("disarmed")
 
     async def fly_mission(self, mission_parameters) -> None:
         if self._mission_task:
