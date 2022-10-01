@@ -32,9 +32,12 @@ async def on_startup(app: web.Application) -> None:
 
 async def on_shutdown(app: web.Application) -> None:
     tasks: weakref.WeakSet[asyncio.Future] = app["tasks"]
+    drone: Drone = app["drone"]
 
     for t in tasks:
         t.cancel()
+
+    await drone.cancel_all_tasks()
 
 
 async def root_handler(request):
