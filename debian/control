@@ -9,6 +9,7 @@ Homepage: https://github.com/dlech/skywrangler-web-server
 Package: skywrangler-web-server
 Architecture: all
 Depends: adduser, avahi-daemon, systemd, ${misc:Depends}, ${python3:Depends}
+Breaks: skywrangler-web-client (<< 1.3.0)
 Recommends: nginx
 Description: Sky Wrangler web server
  Web server for Sky Wrangler onboard computer.
