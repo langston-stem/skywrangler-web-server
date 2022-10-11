@@ -269,7 +269,7 @@ class Drone:
         )
 
         mission_plan = MissionPlan(mission_items)
-
+        await self.system.mission.set_return_to_launch_after_mission(True)
         logger.info("Uploading mission...")
         await self.system.mission.upload_mission(mission_plan)
         logger.info("arming...")
