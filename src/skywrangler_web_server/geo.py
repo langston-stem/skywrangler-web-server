@@ -53,7 +53,9 @@ def latlon_to_utm(
     # transformer that converts from latlon to utm
     transformer = Transformer.from_crs(crs.geodetic_crs, crs)
 
-    return *transformer.transform(latitude, longitude), transformer
+    return *transformer.transform(latitude, longitude), Transformer.from_crs(
+        crs, crs.geodetic_crs
+    )
 
 
 def utm_to_latlon(x: float, y: float, transformer: Transformer) -> Tuple[float, float]:
@@ -68,7 +70,7 @@ def utm_to_latlon(x: float, y: float, transformer: Transformer) -> Tuple[float, 
     Returns:
         A tuple of the latitude and longitude in degrees.
     """
-    return next(transformer.itransform([(x, y)]))
+    return transformer.transform(x, y)
 
 
 def origin_alt_to_takeoff_alt(
