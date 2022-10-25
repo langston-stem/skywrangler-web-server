@@ -58,7 +58,7 @@ def latlon_to_utm(
 
 def utm_to_latlon(x: float, y: float, transformer: Transformer) -> Tuple[float, float]:
     """
-    Converts latitude and longitude to UTM reference system.
+    Converts easting and norting from UTM reference system to latitude and longitude.
 
     Args:
         x: The x coordinate in meters (UTM easting).
