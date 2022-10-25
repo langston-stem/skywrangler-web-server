@@ -32,6 +32,15 @@ class Origin(NamedTuple):
     elevation: float
 
 
+class Transect(NamedTuple):
+    """
+    The transect line.
+    """
+
+    azimuth: float
+    length: float
+
+
 class Parameters(NamedTuple):
     """
     The experiment parameters (variables).
@@ -195,7 +204,9 @@ class Drone:
             )
         )
 
-    async def _fly_mission(self, origin: Origin, parameters: Parameters) -> None:
+    async def _fly_mission(
+        self, origin: Origin, transect: Transect, parameters: Parameters
+    ) -> None:
         # TODO: connection check?
         # TODO: health check?
         logger.info("starting mission with %r %r", origin, parameters)
@@ -287,13 +298,19 @@ class Drone:
             mission_parameters["origin"]["longitude"],
             mission_parameters["origin"]["elevation"],
         )
+        transect = Transect(
+            mission_parameters["transect"]["azimuth"],
+            mission_parameters["transect"]["length"],
+        )
         parameters = Parameters(
             mission_parameters["parameters"]["speed"],
             mission_parameters["parameters"]["distance"],
             mission_parameters["parameters"]["angle"],
         )
 
-        self._mission_task = asyncio.create_task(self._fly_mission(origin, parameters))
+        self._mission_task = asyncio.create_task(
+            self._fly_mission(origin, transect, parameters)
+        )
 
         try:
             await self._mission_task
