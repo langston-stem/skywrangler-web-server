@@ -86,12 +86,9 @@ def relative_point(
     # This converts clockwise azimuth from north to a counter-clockwise angle from horizontal.
     angle = -azimuth + 90
     start_x, start_y, t = latlon_to_utm(latitude, longitude)
-    print(start_x, start_y)
     delta_x, delta_y = dist_ang_to_horiz_vert(distance, angle)
-    print(delta_x, delta_y)
     new_x = start_x + delta_x
     new_y = start_y + delta_y
-    print(new_x, new_y)
     return utm_to_latlon(new_x, new_y, t)
 
 

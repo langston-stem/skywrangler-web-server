@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import AsyncGenerator, Callable, List, NamedTuple, Optional, TypeVar, cast
+from typing import AsyncGenerator, Callable, List, Optional, TypeVar, cast
 
 import rx.core.typing as rx_typing
 import rx.operators as op
@@ -12,6 +12,7 @@ from rx.core import Observable
 from rx.subject import BehaviorSubject, Subject
 
 from .geo import dist_ang_to_horiz_vert, origin_alt_to_takeoff_alt
+from .mission import Origin, Parameters, Transect
 
 # causes spurious errors
 del System.__del__
@@ -20,35 +21,6 @@ logger = logging.getLogger(__name__)
 
 SAFE_ALTITUDE = 30  # meters
 NO_VALUE = float("nan")
-
-
-class Origin(NamedTuple):
-    """
-    The origin point - i.e. the center of the enclosure.
-    """
-
-    latitude: float
-    longitude: float
-    elevation: float
-
-
-class Transect(NamedTuple):
-    """
-    The transect line.
-    """
-
-    azimuth: float
-    length: float
-
-
-class Parameters(NamedTuple):
-    """
-    The experiment parameters (variables).
-    """
-
-    speed: float
-    distance: float
-    angle: float
 
 
 T = TypeVar("T")
