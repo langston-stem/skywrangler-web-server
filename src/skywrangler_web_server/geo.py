@@ -73,6 +73,28 @@ def utm_to_latlon(x: float, y: float, transformer: Transformer) -> Tuple[float, 
     return transformer.transform(x, y)
 
 
+def relative_point(
+    latitude: float, longitude: float, distance: float, azimuth: float
+) -> Tuple[float, float]:
+    """
+    converts reference latitude and longitude to start_x and start_y, then start_x and start_y to meters
+
+    combines start_x and start_y with delta_X and delta_Y to create new (X, Y)
+
+    then converts the new (X, Y) meters back to longitude to latitude
+    """
+    # This converts clockwise azimuth from north to a counter-clockwise angle from horizontal.
+    angle = -azimuth + 90
+    start_x, start_y, t = latlon_to_utm(latitude, longitude)
+    print(start_x, start_y)
+    delta_x, delta_y = dist_ang_to_horiz_vert(distance, angle)
+    print(delta_x, delta_y)
+    new_x = start_x + delta_x
+    new_y = start_y + delta_y
+    print(new_x, new_y)
+    return utm_to_latlon(new_x, new_y, t)
+
+
 def origin_alt_to_takeoff_alt(
     altitude: float, origin_elevation: float, takeoff_elevation: float
 ) -> float:
