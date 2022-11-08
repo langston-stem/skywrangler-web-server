@@ -2,12 +2,14 @@
 Geo reference helper functions.
 """
 
+from cmath import tan
 from math import sin, cos, pi
 from typing import Tuple
 
 from pyproj import CRS, Transformer
 from pyproj.aoi import AreaOfInterest
 from pyproj.database import query_utm_crs_info
+from skywrangler_web_server.drone import SAFE_ALTITUDE
 
 
 def _find_utm_crs(latitude: float, longitude: float) -> CRS:
@@ -92,6 +94,27 @@ def relative_point(
     return utm_to_latlon(new_x, new_y, t)
 
 
+def diagonal_point(
+    latitude: float, longitude: float, height: float, azimuth: float
+) -> Tuple[float, float]:
+    """
+    converts reference latitude and longitude to start_x and start_y, then start_x and start_y to meters
+
+    combines start_x and start_y with delta_X and delta_Y to create new (X, Y)
+
+    then converts the new (X, Y) meters back to longitude to latitude
+    """
+    # This converts clockwise azimuth from north to a counter-clockwise angle from horizontal.
+    angle = -azimuth + 90
+    start_x, start_y, t = latlon_to_utm(latitude, longitude)
+    horizontal = angle_and_height_to_distance(60, height)
+    delta_x, delta_y = dist_ang_to_horiz_vert(horizontal, angle)
+    new_x = start_x + delta_x
+    new_y = start_y + delta_y
+
+    return utm_to_latlon(new_x, new_y, SAFE_ALTITUDE, t)
+
+
 def origin_alt_to_takeoff_alt(
     altitude: float, origin_elevation: float, takeoff_elevation: float
 ) -> float:
@@ -124,3 +147,11 @@ def dist_ang_to_horiz_vert(distance: float, angle: float) -> Tuple[float, float]
     horizontal = cos(angle * pi / 180) * distance
     vertical = sin(angle * pi / 180) * distance
     return horizontal, vertical
+
+
+def angle_and_height_to_distance(angle: float, height: float) -> float:
+    """converts the angle and relative altitude to a distance in between B and C.
+    angle: The angle in degrees.
+    """
+    horizontal = tan(angle * pi / 180) * height
+    return horizontal
