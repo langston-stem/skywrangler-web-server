@@ -19,7 +19,7 @@ del System.__del__
 
 logger = logging.getLogger(__name__)
 
-SAFE_ALTITUDE = 30  # meters
+SAFE_ALTITUDE = 100  # meters
 NO_VALUE = float("nan")
 
 
@@ -214,13 +214,13 @@ class Drone:
                 camera_photo_distance_m=NO_VALUE,
             )
         )
-        # Flies at requested speed and safe altitude to origin point
+        # Flies to line colinear of the tranesct
         mission_items.append(
             MissionItem(
-                latitude_deg=origin.latitude,
-                longitude_deg=origin.longitude,
+                latitude_deg=NO_VALUE,
+                longitude_deg=NO_VALUE,
                 relative_altitude_m=SAFE_ALTITUDE,
-                speed_m_s=NO_VALUE,
+                speed_m_s=parameters.speed,
                 is_fly_through=True,
                 gimbal_pitch_deg=NO_VALUE,
                 gimbal_yaw_deg=NO_VALUE,
@@ -232,12 +232,48 @@ class Drone:
                 camera_photo_distance_m=NO_VALUE,
             )
         )
-        # descend to vertical atitude above the origin
+        # flies at an angle of 60 degrees towards the start of the transect
+        mission_items.append(
+            MissionItem(
+                latitude_deg=NO_VALUE,
+                longitude_deg=NO_VALUE,
+                relative_altitude_m=relative_vertical,
+                speed_m_s=parameters.speed,
+                is_fly_through=True,
+                gimbal_pitch_deg=NO_VALUE,
+                gimbal_yaw_deg=NO_VALUE,
+                camera_action=MissionItem.CameraAction.NONE,
+                loiter_time_s=NO_VALUE,
+                camera_photo_interval_s=NO_VALUE,
+                acceptance_radius_m=NO_VALUE,
+                yaw_deg=NO_VALUE,
+                camera_photo_distance_m=NO_VALUE,
+            )
+        )
+        # Flies at requested speed and requested altitude to the end of the transect
         mission_items.append(
             MissionItem(
                 latitude_deg=origin.latitude,
                 longitude_deg=origin.longitude,
                 relative_altitude_m=relative_vertical,
+                speed_m_s=NO_VALUE,
+                is_fly_through=True,
+                gimbal_pitch_deg=NO_VALUE,
+                gimbal_yaw_deg=NO_VALUE,
+                camer8a_action=MissionItem.CameraAction.NONE,
+                loiter_time_s=NO_VALUE,
+                camera_photo_interval_s=NO_VALUE,
+                acceptance_radius_m=NO_VALUE,
+                yaw_deg=NO_VALUE,
+                camera_photo_distance_m=NO_VALUE,
+            )
+        )
+        # ascends at 60 degrees towards the safe altitude and returns to launch
+        mission_items.append(
+            MissionItem(
+                latitude_deg=origin.latitude,
+                longitude_deg=origin.longitude,
+                relative_altitude_m=SAFE_ALTITUDE,
                 speed_m_s=NO_VALUE,
                 is_fly_through=False,
                 gimbal_pitch_deg=NO_VALUE,
