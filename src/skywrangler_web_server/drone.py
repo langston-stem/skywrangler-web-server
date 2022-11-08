@@ -260,7 +260,7 @@ class Drone:
                 is_fly_through=True,
                 gimbal_pitch_deg=NO_VALUE,
                 gimbal_yaw_deg=NO_VALUE,
-                camer8a_action=MissionItem.CameraAction.NONE,
+                camera_action=MissionItem.CameraAction.NONE,
                 loiter_time_s=NO_VALUE,
                 camera_photo_interval_s=NO_VALUE,
                 acceptance_radius_m=NO_VALUE,

@@ -2,14 +2,12 @@
 Geo reference helper functions.
 """
 
-from cmath import tan
-from math import sin, cos, pi
+from math import sin, cos, tan, pi
 from typing import Tuple
 
 from pyproj import CRS, Transformer
 from pyproj.aoi import AreaOfInterest
 from pyproj.database import query_utm_crs_info
-from skywrangler_web_server.drone import SAFE_ALTITUDE
 
 
 def _find_utm_crs(latitude: float, longitude: float) -> CRS:
@@ -112,7 +110,7 @@ def diagonal_point(
     new_x = start_x + delta_x
     new_y = start_y + delta_y
 
-    return utm_to_latlon(new_x, new_y, SAFE_ALTITUDE, t)
+    return utm_to_latlon(new_x, new_y, t)
 
 
 def origin_alt_to_takeoff_alt(
