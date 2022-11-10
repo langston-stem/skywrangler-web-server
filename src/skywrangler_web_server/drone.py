@@ -20,6 +20,8 @@ del System.__del__
 logger = logging.getLogger(__name__)
 
 SAFE_ALTITUDE = 100  # meters
+ACCEPTED_RADIUS = 0.1  # meters
+SPEED = 10  # meters per second
 NO_VALUE = float("nan")
 
 
@@ -208,31 +210,13 @@ class Drone:
 
         mission_items = []
 
-        # Take off to safe altitude
-        # mission_items.append(
-        #     MissionItem(
-        #         latitude_deg=NO_VALUE,
-        #         longitude_deg=NO_VALUE,
-        #         relative_altitude_m=SAFE_ALTITUDE,
-        #         speed_m_s=parameters.speed,
-        #         is_fly_through=True,
-        #         gimbal_pitch_deg=NO_VALUE,
-        #         gimbal_yaw_deg=NO_VALUE,
-        #         camera_action=MissionItem.CameraAction.NONE,
-        #         loiter_time_s=NO_VALUE,
-        #         camera_photo_interval_s=NO_VALUE,
-        #         acceptance_radius_m=NO_VALUE,
-        #         yaw_deg=NO_VALUE,
-        #         camera_photo_distance_m=NO_VALUE,
-        #     )
-        # )
         # Flies to line colinear of the tranesct
         mission_items.append(
             MissionItem(
                 latitude_deg=lat_b,
                 longitude_deg=lon_b,
                 relative_altitude_m=SAFE_ALTITUDE,
-                speed_m_s=NO_VALUE,
+                speed_m_s=SPEED,
                 is_fly_through=True,
                 gimbal_pitch_deg=NO_VALUE,
                 gimbal_yaw_deg=NO_VALUE,
@@ -257,7 +241,7 @@ class Drone:
                 camera_action=MissionItem.CameraAction.NONE,
                 loiter_time_s=NO_VALUE,
                 camera_photo_interval_s=NO_VALUE,
-                acceptance_radius_m=0.005,
+                acceptance_radius_m=ACCEPTED_RADIUS,
                 yaw_deg=NO_VALUE,
                 camera_photo_distance_m=NO_VALUE,
             )
@@ -268,14 +252,14 @@ class Drone:
                 latitude_deg=d.latitude,
                 longitude_deg=d.longitude,
                 relative_altitude_m=relative_vertical,
-                speed_m_s=NO_VALUE,
+                speed_m_s=SPEED,
                 is_fly_through=True,
                 gimbal_pitch_deg=NO_VALUE,
                 gimbal_yaw_deg=NO_VALUE,
                 camera_action=MissionItem.CameraAction.NONE,
                 loiter_time_s=NO_VALUE,
                 camera_photo_interval_s=NO_VALUE,
-                acceptance_radius_m=0.005,
+                acceptance_radius_m=ACCEPTED_RADIUS,
                 yaw_deg=NO_VALUE,
                 camera_photo_distance_m=NO_VALUE,
             )
@@ -286,7 +270,7 @@ class Drone:
                 latitude_deg=lat_e,
                 longitude_deg=lon_e,
                 relative_altitude_m=SAFE_ALTITUDE,
-                speed_m_s=NO_VALUE,
+                speed_m_s=SPEED,
                 is_fly_through=True,
                 gimbal_pitch_deg=NO_VALUE,
                 gimbal_yaw_deg=NO_VALUE,

@@ -1,6 +1,8 @@
 import math
 
 from skywrangler_web_server.geo import (
+    angle_and_height_to_distance,
+    diagonal_point,
     latlon_to_utm,
     origin_alt_to_takeoff_alt,
     utm_to_latlon,
@@ -36,6 +38,25 @@ def test_dist_ang_to_horiz_vert():
     horizontal, vertical = dist_ang_to_horiz_vert(3, 30)
     assert math.isclose(horizontal, 2.6, abs_tol=0.05)
     assert math.isclose(vertical, 1.5, abs_tol=0.05)
+
+
+def test_angle_height_to_distance():
+    distance = angle_and_height_to_distance(45, 10)
+    assert math.isclose(distance, 10, rel_tol=1e-4)
+
+    distance = angle_and_height_to_distance(60, 10)
+    assert math.isclose(distance, 5.7735, rel_tol=1e-4)
+
+
+def test_diagonal_point():
+    new_lat, new_lon = diagonal_point(35.9460635, -97.2588927, 15, 90)
+    assert math.isclose(new_lat, 35.9460621, rel_tol=1e-7)
+    assert math.isclose(new_lon, -97.2587967, rel_tol=1e-7)
+
+
+# new_lat, new_lon = diagonal_point(15, 15, 15, 0)
+# assert math.isclose(new_lat, , abs_tol=0.05 )
+# assert math.isclose(new_lon, , abs_tol=0.05 )
 
 
 def test_relative_point():
