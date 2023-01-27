@@ -11,15 +11,16 @@ from mavsdk.telemetry import Battery, GpsInfo, Health, LandedState, Position, St
 from rx.core import Observable
 from rx.subject import BehaviorSubject, Subject
 
-from .geo import dist_ang_to_horiz_vert, origin_alt_to_takeoff_alt
-from .mission import Origin, Parameters, Transect
+from .geo import diagonal_point, dist_ang_to_horiz_vert, origin_alt_to_takeoff_alt
+from .mission import Origin, Parameters, Transect, transect_points
 
 # causes spurious errors
 del System.__del__
 
 logger = logging.getLogger(__name__)
 
-SAFE_ALTITUDE = 30  # meters
+SAFE_ALTITUDE = 100  # meters
+SPEED = 10  # meters per second
 NO_VALUE = float("nan")
 
 
@@ -181,27 +182,60 @@ class Drone:
     ) -> None:
         # TODO: connection check?
         # TODO: health check?
-        logger.info("starting mission with %r %r", origin, parameters)
+        logger.info("starting mission with %r %r %r", origin, transect, parameters)
 
         horizontal, vertical = dist_ang_to_horiz_vert(
             parameters.distance, parameters.angle
         )
-
+        (c, d) = transect_points(origin, transect, parameters)
         home_position = await wait_one(self.home)
 
         # mission items need altitudes relative to takeoff altitude
         relative_vertical = origin_alt_to_takeoff_alt(
             vertical, origin.elevation, home_position.absolute_altitude_m
         )
+        (lat_b, lon_b) = diagonal_point(
+            c.latitude,
+            c.longitude,
+            SAFE_ALTITUDE - relative_vertical,
+            transect.azimuth - 90,
+        )
+        (lat_e, lon_e) = diagonal_point(
+            d.latitude,
+            d.longitude,
+            SAFE_ALTITUDE - relative_vertical,
+            transect.azimuth + 90,
+        )
+        logger.info("relative verticle %r", relative_vertical)
 
         mission_items = []
 
-        # Take off to safe altitude
+        # Flies to line colinear of the tranesct
+        # Point A
         mission_items.append(
             MissionItem(
-                latitude_deg=NO_VALUE,
-                longitude_deg=NO_VALUE,
+                latitude_deg=lat_b,
+                longitude_deg=lon_b,
                 relative_altitude_m=SAFE_ALTITUDE,
+                speed_m_s=SPEED,
+                is_fly_through=True,
+                gimbal_pitch_deg=NO_VALUE,
+                gimbal_yaw_deg=NO_VALUE,
+                camera_action=MissionItem.CameraAction.NONE,
+                loiter_time_s=NO_VALUE,
+                camera_photo_interval_s=NO_VALUE,
+                acceptance_radius_m=NO_VALUE,
+                yaw_deg=NO_VALUE,
+                camera_photo_distance_m=NO_VALUE,
+            )
+        )
+        # flies at an angle of 60 degrees towards the start of the transect
+        # Point B
+        mission_items.append(
+            MissionItem(
+                latitude_deg=c.latitude,
+                longitude_deg=c.longitude,
+                relative_altitude_m=relative_vertical,
                 speed_m_s=parameters.speed,
                 is_fly_through=True,
                 gimbal_pitch_deg=NO_VALUE,
@@ -214,13 +248,14 @@ class Drone:
                 camera_photo_distance_m=NO_VALUE,
             )
         )
-        # Flies at requested speed and safe altitude to origin point
+        # Flies at requested speed and requested altitude to the end of the transect
+        # Point C
         mission_items.append(
             MissionItem(
-                latitude_deg=origin.latitude,
-                longitude_deg=origin.longitude,
-                relative_altitude_m=SAFE_ALTITUDE,
-                speed_m_s=NO_VALUE,
+                latitude_deg=d.latitude,
+                longitude_deg=d.longitude,
+                relative_altitude_m=relative_vertical,
+                speed_m_s=SPEED,
                 is_fly_through=True,
                 gimbal_pitch_deg=NO_VALUE,
                 gimbal_yaw_deg=NO_VALUE,
@@ -232,24 +267,27 @@ class Drone:
                 camera_photo_distance_m=NO_VALUE,
             )
         )
-        # descend to vertical atitude above the origin
+        # ascends at 60 degrees towards the safe altitude and returns to launch
+        # Point D
         mission_items.append(
             MissionItem(
-                latitude_deg=origin.latitude,
-                longitude_deg=origin.longitude,
-                relative_altitude_m=relative_vertical,
-                speed_m_s=NO_VALUE,
-                is_fly_through=False,
+                latitude_deg=lat_e,
+                longitude_deg=lon_e,
+                relative_altitude_m=SAFE_ALTITUDE,
+                speed_m_s=SPEED,
+                is_fly_through=True,
                 gimbal_pitch_deg=NO_VALUE,
                 gimbal_yaw_deg=NO_VALUE,
                 camera_action=MissionItem.CameraAction.NONE,
                 loiter_time_s=NO_VALUE,
                 camera_photo_interval_s=NO_VALUE,
-                acceptance_radius_m=0.005,
+                acceptance_radius_m=NO_VALUE,
                 yaw_deg=NO_VALUE,
                 camera_photo_distance_m=NO_VALUE,
             )
         )
+        await self.system.action.set_return_to_launch_altitude(SAFE_ALTITUDE)
+        await self.system.action.set_takeoff_altitude(SAFE_ALTITUDE)
 
         mission_plan = MissionPlan(mission_items)
         await self.system.mission.set_return_to_launch_after_mission(True)
