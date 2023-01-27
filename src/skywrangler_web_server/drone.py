@@ -20,7 +20,6 @@ del System.__del__
 logger = logging.getLogger(__name__)
 
 SAFE_ALTITUDE = 100  # meters
-ACCEPTED_RADIUS = 0.1  # meters
 SPEED = 10  # meters per second
 NO_VALUE = float("nan")
 
@@ -183,7 +182,7 @@ class Drone:
     ) -> None:
         # TODO: connection check?
         # TODO: health check?
-        logger.info("starting mission with %r %r", origin, parameters)
+        logger.info("starting mission with %r %r %r", origin, transect, parameters)
 
         horizontal, vertical = dist_ang_to_horiz_vert(
             parameters.distance, parameters.angle
@@ -207,10 +206,12 @@ class Drone:
             SAFE_ALTITUDE - relative_vertical,
             transect.azimuth + 90,
         )
+        logger.info("relative verticle %r", relative_vertical)
 
         mission_items = []
 
         # Flies to line colinear of the tranesct
+        # Point A
         mission_items.append(
             MissionItem(
                 latitude_deg=lat_b,
@@ -229,6 +230,7 @@ class Drone:
             )
         )
         # flies at an angle of 60 degrees towards the start of the transect
+        # Point B
         mission_items.append(
             MissionItem(
                 latitude_deg=c.latitude,
@@ -241,12 +243,13 @@ class Drone:
                 camera_action=MissionItem.CameraAction.NONE,
                 loiter_time_s=NO_VALUE,
                 camera_photo_interval_s=NO_VALUE,
-                acceptance_radius_m=ACCEPTED_RADIUS,
+                acceptance_radius_m=NO_VALUE,
                 yaw_deg=NO_VALUE,
                 camera_photo_distance_m=NO_VALUE,
             )
         )
         # Flies at requested speed and requested altitude to the end of the transect
+        # Point C
         mission_items.append(
             MissionItem(
                 latitude_deg=d.latitude,
@@ -259,12 +262,13 @@ class Drone:
                 camera_action=MissionItem.CameraAction.NONE,
                 loiter_time_s=NO_VALUE,
                 camera_photo_interval_s=NO_VALUE,
-                acceptance_radius_m=ACCEPTED_RADIUS,
+                acceptance_radius_m=NO_VALUE,
                 yaw_deg=NO_VALUE,
                 camera_photo_distance_m=NO_VALUE,
             )
         )
         # ascends at 60 degrees towards the safe altitude and returns to launch
+        # Point D
         mission_items.append(
             MissionItem(
                 latitude_deg=lat_e,
