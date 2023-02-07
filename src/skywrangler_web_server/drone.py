@@ -289,6 +289,11 @@ class Drone:
         await self.system.action.set_return_to_launch_altitude(SAFE_ALTITUDE)
         await self.system.action.set_takeoff_altitude(SAFE_ALTITUDE)
 
+        await self.system.param.set_param_float("MPC_Z_VEL_MAX_DN", 4.0)
+        await self.system.param.set_param_float("MPC_Z_VEL_MAX_UP", 4.0)
+        await self.system.param.set_param_float("MPC_Z_V_AUTO_DN", 4.0)
+        await self.system.param.set_param_float("MPC_Z_V_AUTO_UP", 4.0)
+
         mission_plan = MissionPlan(mission_items)
         await self.system.mission.set_return_to_launch_after_mission(True)
         logger.info("Uploading mission...")
