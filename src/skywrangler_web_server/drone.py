@@ -267,8 +267,27 @@ class Drone:
                 camera_photo_distance_m=NO_VALUE,
             )
         )
-        # ascends at 60 degrees towards the safe altitude and returns to launch
+        # ascends at 60 degrees towards the safe altitude towards the return point
         # Point D
+        mission_items.append(
+            MissionItem(
+                latitude_deg=lat_e,
+                longitude_deg=lon_e,
+                relative_altitude_m=SAFE_ALTITUDE,
+                speed_m_s=SPEED,
+                is_fly_through=True,
+                gimbal_pitch_deg=NO_VALUE,
+                gimbal_yaw_deg=NO_VALUE,
+                camera_action=MissionItem.CameraAction.NONE,
+                loiter_time_s=NO_VALUE,
+                camera_photo_interval_s=NO_VALUE,
+                acceptance_radius_m=NO_VALUE,
+                yaw_deg=NO_VALUE,
+                camera_photo_distance_m=NO_VALUE,
+            )
+        )
+        # Flies at a safe altitude and returns to launch
+        # Point E
         mission_items.append(
             MissionItem(
                 latitude_deg=lat_e,
