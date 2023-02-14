@@ -341,6 +341,10 @@ class Drone:
             mission_parameters["parameters"]["distance"],
             mission_parameters["parameters"]["angle"],
         )
+        returnt = Return(
+            mission_parameters["return"]["latitude"],
+            mission_parameters["return"]["longitude"],
+        )
 
         self._mission_task = asyncio.create_task(
             self._fly_mission(origin, transect, parameters)
