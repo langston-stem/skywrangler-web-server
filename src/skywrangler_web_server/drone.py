@@ -12,7 +12,7 @@ from rx.core import Observable
 from rx.subject import BehaviorSubject, Subject
 
 from .geo import diagonal_point, dist_ang_to_horiz_vert, origin_alt_to_takeoff_alt
-from .mission import Origin, Parameters, Transect, transect_points
+from .mission import Origin, Parameters, Transect, transect_points, coordinateTwoD
 
 # causes spurious errors
 del System.__del__
@@ -178,11 +178,17 @@ class Drone:
         )
 
     async def _fly_mission(
-        self, origin: Origin, transect: Transect, parameters: Parameters
+        self,
+        origin: Origin,
+        transect: Transect,
+        parameters: Parameters,
+        returnt: coordinateTwoD,
     ) -> None:
         # TODO: connection check?
         # TODO: health check?
-        logger.info("starting mission with %r %r %r", origin, transect, parameters)
+        logger.info(
+            "starting mission with %r %r %r %r", origin, transect, parameters, returnt
+        )
 
         horizontal, vertical = dist_ang_to_horiz_vert(
             parameters.distance, parameters.angle
@@ -341,13 +347,13 @@ class Drone:
             mission_parameters["parameters"]["distance"],
             mission_parameters["parameters"]["angle"],
         )
-        returnt = Return(
+        returnt = coordinateTwoD(
             mission_parameters["return"]["latitude"],
             mission_parameters["return"]["longitude"],
         )
 
         self._mission_task = asyncio.create_task(
-            self._fly_mission(origin, transect, parameters)
+            self._fly_mission(origin, transect, parameters, returnt)
         )
 
         try:
