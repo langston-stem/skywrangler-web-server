@@ -39,6 +39,15 @@ class Parameters(NamedTuple):
     angle: float
 
 
+class Coordinate2D(NamedTuple):
+    """
+    2D coordinate - i.e. allows us to input a coordinate but only on a 2D scale.
+    """
+
+    latitude: float
+    longitude: float
+
+
 def transect_points(
     origin: Origin, transect: Transect, parameters: Parameters
 ) -> Tuple[Point, Point]:
