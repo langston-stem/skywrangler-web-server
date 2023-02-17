@@ -39,7 +39,7 @@ class Parameters(NamedTuple):
     angle: float
 
 
-class coordinateTwoD(NamedTuple):
+class Coordinate2D(NamedTuple):
     """
     2D coordinate - i.e. allows us to input a coordinate but only on a 2D scale.
     """

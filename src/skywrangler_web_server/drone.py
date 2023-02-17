@@ -12,7 +12,7 @@ from rx.core import Observable
 from rx.subject import BehaviorSubject, Subject
 
 from .geo import diagonal_point, dist_ang_to_horiz_vert, origin_alt_to_takeoff_alt
-from .mission import Origin, Parameters, Transect, transect_points, coordinateTwoD
+from .mission import Origin, Parameters, Transect, transect_points, Coordinate2D
 
 # causes spurious errors
 del System.__del__
@@ -182,12 +182,16 @@ class Drone:
         origin: Origin,
         transect: Transect,
         parameters: Parameters,
-        returnt: coordinateTwoD,
+        return_point: Coordinate2D,
     ) -> None:
         # TODO: connection check?
         # TODO: health check?
         logger.info(
-            "starting mission with %r %r %r %r", origin, transect, parameters, returnt
+            "starting mission with %r %r %r %r",
+            origin,
+            transect,
+            parameters,
+            return_point,
         )
 
         horizontal, vertical = dist_ang_to_horiz_vert(
@@ -212,12 +216,16 @@ class Drone:
             SAFE_ALTITUDE - relative_vertical,
             transect.azimuth + 90,
         )
+        (lat_f, lon_f) = return_point.latitude, return_point.longitude
+
         logger.info("relative verticle %r", relative_vertical)
 
         mission_items = []
 
+        # Point A is not a mission item, it is going to safe altitude above home
+
         # Flies to line colinear of the tranesct
-        # Point A
+        # Point B
         mission_items.append(
             MissionItem(
                 latitude_deg=lat_b,
@@ -236,7 +244,7 @@ class Drone:
             )
         )
         # flies at an angle of 60 degrees towards the start of the transect
-        # Point B
+        # Point C
         mission_items.append(
             MissionItem(
                 latitude_deg=c.latitude,
@@ -255,7 +263,7 @@ class Drone:
             )
         )
         # Flies at requested speed and requested altitude to the end of the transect
-        # Point C
+        # Point D
         mission_items.append(
             MissionItem(
                 latitude_deg=d.latitude,
@@ -274,7 +282,7 @@ class Drone:
             )
         )
         # ascends at 60 degrees towards the safe altitude towards the return point
-        # Point D
+        # Point E
         mission_items.append(
             MissionItem(
                 latitude_deg=lat_e,
@@ -293,11 +301,11 @@ class Drone:
             )
         )
         # Flies at a safe altitude and returns to launch
-        # Point E
+        # Point F
         mission_items.append(
             MissionItem(
-                latitude_deg=lat_e,
-                longitude_deg=lon_e,
+                latitude_deg=lat_f,
+                longitude_deg=lon_f,
                 relative_altitude_m=SAFE_ALTITUDE,
                 speed_m_s=SPEED,
                 is_fly_through=True,
@@ -347,13 +355,13 @@ class Drone:
             mission_parameters["parameters"]["distance"],
             mission_parameters["parameters"]["angle"],
         )
-        returnt = coordinateTwoD(
-            mission_parameters["return"]["latitude"],
-            mission_parameters["return"]["longitude"],
+        return_point = Coordinate2D(
+            mission_parameters["returnPoint"]["latitude"],
+            mission_parameters["returnPoint"]["longitude"],
         )
 
         self._mission_task = asyncio.create_task(
-            self._fly_mission(origin, transect, parameters, returnt)
+            self._fly_mission(origin, transect, parameters, return_point)
         )
 
         try:
