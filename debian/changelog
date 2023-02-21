@@ -1,3 +1,17 @@
+skywrangler-web-server (1.6.0) bullseye; urgency=medium
+
+  [ junetheprogrammer ]
+  * Added the "return to launch"  function
+  * Added new relative point function
+  * Added a function to compute transect points 
+  * Added handling of transect points
+  * Added return point to mission items
+
+  [ David Lechner ]
+  * drone: handle transect data from client
+
+ -- David Lechner <david@ablerobots.com>  Tue, 21 Feb 2023 22:37:04 +0000
+
 skywrangler-web-server (1.5.0) bullseye; urgency=medium
 
   [ David Lechner ]
