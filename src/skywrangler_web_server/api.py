@@ -4,6 +4,7 @@ import logging
 from http import HTTPStatus
 from typing import List, TypedDict
 import weakref
+from importlib.metadata import version
 
 from aiohttp import web
 from aiohttp_sse import EventSourceResponse, sse_response
@@ -53,6 +54,19 @@ async def handle_shutdown(request: web.Request) -> web.Response:
         return web.Response()
     except Exception as ex:
         logger.exception("/api/shutdown")
+        return web.Response(status=HTTPStatus.INTERNAL_SERVER_ERROR, reason=str(ex))
+
+
+@routes.get("/api/version")
+async def handle_version(request: web.Request) -> web.Response:
+    try:
+
+        version_is = version("skywrangler_web_server")
+        data = {"version": version_is}
+        return web.json_response(data)
+
+    except Exception as ex:
+        logger.exception("/api/version")
         return web.Response(status=HTTPStatus.INTERNAL_SERVER_ERROR, reason=str(ex))
 
 
