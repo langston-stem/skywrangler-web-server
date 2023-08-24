@@ -28,13 +28,14 @@
 				},
 				"[python]": {
 					"editor.formatOnSave": true,
-					"editor.defaultFormatter": "ms-python.python"
-				},
-				"python.formatting.provider": "black"
+					"editor.defaultFormatter": "ms-python.black-formatter"
+				}
 			},
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
-				"ms-python.python"
+				"ms-python.python",
+				"ms-python.black-formatter",
+				"ms-python.flake8"
 			]
 		}
 	},

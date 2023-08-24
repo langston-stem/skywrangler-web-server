@@ -18,7 +18,7 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends dbus avahi-daemon \
     python3-aiohttp python3-aiohttp-sse python3-dbus-next python3-mavsdk \
     python3-sdnotify python3-pyproj python3-pytest python3-rx \
-    black flake8 pipx \
+    pipx \
     devscripts debhelper dh-python git-buildpackage dput lintian bash-completion
 
 COPY devscripts.conf /etc/
