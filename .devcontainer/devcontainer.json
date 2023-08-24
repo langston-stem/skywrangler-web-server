@@ -6,54 +6,59 @@
 		"dockerfile": "Dockerfile",
 		// Update 'VARIANT' to pick an Debian version: bullseye, buster, stretch
 		// Use bullseye or stretch on local arm64/Apple Silicon.
-		"args": { "VARIANT": "bullseye" }
+		"args": {
+			"VARIANT": "bullseye"
+		}
 	},
-
-	// Set *default* container specific settings.json values on container create.
-	"settings": {
-		// Ensure VS Code uses the right shell for terminals and tasks.
-		"terminal.integrated.defaultProfile.linux": "bash",
-		"terminal.integrated.profiles.linux": {
-			"bash": {
-				"path": "/bin/bash",
-				"args": [
-					// Run login bash shell in VSCode integrated terminal
-					// needed to include /etc/profile and friends
-					"--login"
-				]
-			}
-		},
-		"[python]": {
-			"editor.formatOnSave": true,
-			"editor.defaultFormatter": "ms-python.python"
-		},
-		"python.formatting.provider": "black"
+	"customizations": {
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": {
+				// Ensure VS Code uses the right shell for terminals and tasks.
+				"terminal.integrated.defaultProfile.linux": "bash",
+				"terminal.integrated.profiles.linux": {
+					"bash": {
+						"path": "/bin/bash",
+						"args": [
+							// Run login bash shell in VSCode integrated terminal
+							// needed to include /etc/profile and friends
+							"--login"
+						]
+					}
+				},
+				"[python]": {
+					"editor.formatOnSave": true,
+					"editor.defaultFormatter": "ms-python.python"
+				},
+				"python.formatting.provider": "black"
+			},
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-python.python"
+			]
+		}
 	},
-
-	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": ["ms-python.python"],
-
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
-
-	"appPort": ["14540:14540/udp", "8080:8080"],
-	"otherPortsAttributes": {"onAutoForward": "silent"},
-
+	"appPort": [
+		"14540:14540/udp",
+		"8080:8080"
+	],
+	"otherPortsAttributes": {
+		"onAutoForward": "silent"
+	},
 	// Uncomment to use the Docker CLI from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker.
 	// "mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
-
 	"runArgs": [
 		"--cap-add=SYS_PTRACE",
 		"--network=skywrangler-web",
 		"--network-alias=skywrangler-web-server"
 	],
-
+	"initializeCommand": "docker network create skywrangler-web || :",
 	// needed for debuild to have permission ot use the directory
 	"onCreateCommand": "sudo chmod 777 /workspaces",
-
 	"postCreateCommand": "python3 setup.py develop --user",
 	"postStartCommand": "sudo service dbus start && sudo service avahi-daemon start && sudo service mavsdk-server start",
-
 	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
 	"remoteUser": "vscode"
 }
