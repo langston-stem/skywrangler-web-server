@@ -1,0 +1,25 @@
+{
+    "home": {
+        "latitude":  35.9301904295499,
+        "longitude": -97.26450295241108,
+        "altitude": 307.0
+    },
+    "origin": {
+        "latitude": 35.932121645130756,
+        "longitude": -97.2631249266781,
+        "altitude": 304.0
+    },
+    "transect": {
+        "azimuth": 85.0,
+        "length": 100.0
+    },
+    "away": {
+        "latitude": 35.934456813161006,
+        "longitude": -97.2646272318608
+    },
+    "variables": {
+        "speed": [2, 5, 8],
+        "angle": [30, 60, 90],
+        "distance": [30, 15, 7, 3]
+    }
+}
