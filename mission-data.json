@@ -10,7 +10,7 @@
         "altitude": 304.0
     },
     "transect": {
-        "azimuth": 85.0,
+        "azimuth": -85.0,
         "length": 100.0
     },
     "away": {
